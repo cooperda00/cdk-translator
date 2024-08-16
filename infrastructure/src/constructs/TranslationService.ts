@@ -1,0 +1,113 @@
+import { RemovalPolicy, StackProps } from "aws-cdk-lib";
+import { AttributeType, Table } from "aws-cdk-lib/aws-dynamodb";
+import { PolicyStatement } from "aws-cdk-lib/aws-iam";
+import {
+  Code,
+  ILayerVersion,
+  LayerVersion,
+  Runtime,
+} from "aws-cdk-lib/aws-lambda";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+import { Construct } from "constructs";
+import * as path from "path";
+import { RestApiService } from "./RestApiService";
+import { lambdaLayersPath, lambdasPackagesPath } from "../helpers";
+
+export interface ITranslationServiceProps extends StackProps {
+  restApi: RestApiService;
+}
+
+export class TranslationService extends Construct {
+  private partitionKey = "requestId";
+  private tableName = "translationsTable";
+
+  public layers: ILayerVersion[];
+  public restApi: RestApiService;
+
+  constructor(
+    scope: Construct,
+    id: string,
+    { restApi }: ITranslationServiceProps
+  ) {
+    super(scope, id);
+
+    this.restApi = restApi;
+
+    new Table(this, "translationsTable", {
+      tableName: this.tableName,
+      partitionKey: {
+        name: this.partitionKey,
+        type: AttributeType.STRING,
+      },
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    const translateAccessPolicy = new PolicyStatement({
+      actions: ["translate:TranslateText"],
+      resources: ["*"],
+    });
+
+    const translationTableAccessPolicy = new PolicyStatement({
+      actions: [
+        "dynamodb:PutItem",
+        "dynamodb:Scan",
+        "dynamodb:GetItem",
+        "dynamodb:DeleteItem",
+      ],
+      resources: ["*"],
+    });
+
+    this.layers = [
+      new LayerVersion(this, "utils", {
+        code: Code.fromAsset(lambdaLayersPath),
+        compatibleRuntimes: [Runtime.NODEJS_20_X],
+        removalPolicy: RemovalPolicy.DESTROY,
+      }),
+    ];
+
+    const createTranslationFunc = this.createNodejsLambda({
+      id: "translate",
+      handler: "createTranslation",
+      policies: [translateAccessPolicy, translationTableAccessPolicy],
+    });
+
+    restApi.mapLambdaToMethod({
+      method: "POST",
+      lambda: createTranslationFunc,
+    });
+
+    const getTranslationsFunc = this.createNodejsLambda({
+      id: "getTranslations",
+      handler: "getTranslations",
+      policies: [translationTableAccessPolicy],
+    });
+
+    restApi.mapLambdaToMethod({ method: "GET", lambda: getTranslationsFunc });
+  }
+
+  private createNodejsLambda({
+    id,
+    handler,
+    policies,
+  }: {
+    id: string;
+    handler: string;
+    policies: PolicyStatement[];
+  }) {
+    return new NodejsFunction(this, id, {
+      entry: path.join(lambdasPackagesPath, "translate/index.ts"),
+      handler,
+      runtime: Runtime.NODEJS_20_X,
+      initialPolicy: policies,
+      environment: {
+        TRANSLATION_TABLE_NAME: this.tableName,
+        TRANSLATION_TABLE_PARTITION_KEY: this.partitionKey,
+      },
+      layers: this.layers,
+      bundling: {
+        minify: true,
+        externalModules: ["/opt/nodejs/lambda-layers-utils"],
+      },
+    });
+  }
+}

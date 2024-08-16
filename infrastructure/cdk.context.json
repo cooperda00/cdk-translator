@@ -1,0 +1,10 @@
+{
+  "hosted-zone:account=026090547189:domainName=test.danielcooper.io:region=eu-west-2": {
+    "Id": "/hostedzone/Z06814442WO9A16DDK5ML",
+    "Name": "test.danielcooper.io."
+  },
+  "hosted-zone:account=026090547189:domainName=test.danielcooper.io:region=us-east-1": {
+    "Id": "/hostedzone/Z06814442WO9A16DDK5ML",
+    "Name": "test.danielcooper.io."
+  }
+}

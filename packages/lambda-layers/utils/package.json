@@ -1,0 +1,10 @@
+{
+  "name": "@cdk-test/lambda-layers-utils",
+  "version": "1.0.0",
+  "main": "./nodejs/utils/index.js",
+  "types": "./nodejs/utils/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  }
+}
