@@ -61,6 +61,7 @@ export class StaticWebsiteDeployment extends Construct {
       sources: [Source.asset(clientDistPath)],
       distribution,
       distributionPaths: ["/*"], // Invalidate cache when any file changes
+      memoryLimit: 512,
     });
 
     new ARecord(this, "route53Domain", {

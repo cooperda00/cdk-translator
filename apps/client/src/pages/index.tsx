@@ -2,8 +2,9 @@ import axios, { AxiosError } from "axios";
 import { Inter } from "next/font/google";
 import { useState } from "react";
 import { TranslateRequest, TranslateResponse } from "@cdk-test/types";
+import { fetchAuthSession } from "aws-amplify/auth";
 
-const apiURL = "https://api.test.danielcooper.io";
+const apiURL = "https://api.test.danielcooper.io/translations";
 
 const translate = async (
   input: TranslateRequest
@@ -11,7 +12,13 @@ const translate = async (
   { success: true; translation: string } | { success: false; message: string }
 > => {
   try {
-    const res = await axios.post<TranslateResponse>(apiURL, input);
+    const authToken = (await fetchAuthSession()).tokens?.idToken?.toString();
+
+    const res = await axios.post<TranslateResponse>(apiURL, input, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
 
     return {
       success: true,
@@ -98,7 +105,15 @@ export default function Home() {
 
       <button
         onClick={async () => {
-          const res = await axios.get(apiURL);
+          const authToken = (
+            await fetchAuthSession()
+          ).tokens?.idToken?.toString();
+
+          const res = await axios.get(apiURL, {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          });
           console.log(res.data);
         }}
       >

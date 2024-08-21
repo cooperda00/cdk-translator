@@ -28,12 +28,13 @@ export class TranslationServiceStack extends cdk.Stack {
       }
     );
 
-    const { userPoolClient } = new AuthService(this, "authService");
+    const { userPool } = new AuthService(this, "authService");
 
     const restApi = new RestApiService(this, "restApiService", {
       apiURL: this.apiURL,
       sslCertificate,
       zone,
+      userPool,
     });
 
     new TranslationService(this, "translationService", {

@@ -17,5 +17,6 @@ export type TranslateResponse = z.infer<typeof translateResponseSchema>;
 
 export type TranslationDBDocument = TranslateRequest &
   TranslateResponse & {
+    username: string;
     requestId: string;
   };

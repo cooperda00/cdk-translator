@@ -18,8 +18,9 @@ export interface ITranslationServiceProps extends StackProps {
 }
 
 export class TranslationService extends Construct {
-  private partitionKey = "requestId";
   private tableName = "translationsTable";
+  private partitionKey = "username";
+  private sortKey = "requestId";
 
   public layers: ILayerVersion[];
   public restApi: RestApiService;
@@ -39,6 +40,10 @@ export class TranslationService extends Construct {
         name: this.partitionKey,
         type: AttributeType.STRING,
       },
+      sortKey: {
+        name: this.sortKey,
+        type: AttributeType.STRING,
+      },
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -53,6 +58,7 @@ export class TranslationService extends Construct {
         "dynamodb:Scan",
         "dynamodb:GetItem",
         "dynamodb:DeleteItem",
+        "dynamodb:Query",
       ],
       resources: ["*"],
     });
@@ -72,8 +78,10 @@ export class TranslationService extends Construct {
     });
 
     restApi.mapLambdaToMethod({
+      resource: restApi.translationResource, // at path /translation
       method: "POST",
       lambda: createTranslationFunc,
+      isAuthed: true,
     });
 
     const getTranslationsFunc = this.createNodejsLambda({
@@ -82,7 +90,25 @@ export class TranslationService extends Construct {
       policies: [translationTableAccessPolicy],
     });
 
-    restApi.mapLambdaToMethod({ method: "GET", lambda: getTranslationsFunc });
+    restApi.mapLambdaToMethod({
+      resource: restApi.translationResource,
+      method: "GET",
+      lambda: getTranslationsFunc,
+      isAuthed: true,
+    });
+
+    const deleteTranslationsFunc = this.createNodejsLambda({
+      id: "deleteTranslation",
+      handler: "deleteTranslation",
+      policies: [translationTableAccessPolicy],
+    });
+
+    restApi.mapLambdaToMethod({
+      resource: restApi.translationResource,
+      method: "DELETE",
+      lambda: deleteTranslationsFunc,
+      isAuthed: true,
+    });
   }
 
   private createNodejsLambda({
@@ -102,11 +128,11 @@ export class TranslationService extends Construct {
       environment: {
         TRANSLATION_TABLE_NAME: this.tableName,
         TRANSLATION_TABLE_PARTITION_KEY: this.partitionKey,
+        TRANSLATION_TABLE_SORT_KEY: this.sortKey,
       },
       layers: this.layers,
       bundling: {
         minify: true,
-        externalModules: ["/opt/nodejs/lambda-layers-utils"],
       },
     });
   }
