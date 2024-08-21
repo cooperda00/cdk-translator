@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import { useState } from "react";
 import { TranslateRequest, TranslateResponse } from "@cdk-test/types";
 import { fetchAuthSession } from "aws-amplify/auth";
+import { ProtectedPage } from "@/components/ProtectedPage";
+import { Input } from "@/components/ui";
 
 const apiURL = "https://api.test.danielcooper.io/translations";
 
@@ -33,7 +35,7 @@ const translate = async (
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+const Home = () => {
   const [sourceLang, setSourceLang] = useState("en");
   const [targetLang, setTargetLang] = useState("es");
   const [sourceText, setSourceText] = useState("");
@@ -63,7 +65,7 @@ export default function Home() {
           <label htmlFor="sourceLang" className="block">
             Source Language
           </label>
-          <input
+          <Input
             type="text"
             value={sourceLang}
             onChange={(e) => setSourceLang(e.target.value)}
@@ -76,7 +78,7 @@ export default function Home() {
           <label htmlFor="targetLang" className="block">
             Target Language
           </label>
-          <input
+          <Input
             type="text"
             value={targetLang}
             onChange={(e) => setTargetLang(e.target.value)}
@@ -121,4 +123,6 @@ export default function Home() {
       </button>
     </main>
   );
-}
+};
+
+export default ProtectedPage(Home);

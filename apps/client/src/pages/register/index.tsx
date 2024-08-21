@@ -2,6 +2,11 @@ import Link from "next/link";
 import React, { FC, useEffect, useState } from "react";
 import { signUp, confirmSignUp, autoSignIn } from "aws-amplify/auth";
 import { useRouter } from "next/router";
+import { InputGroup } from "@/components/ui/InputGroup";
+import { Button } from "@/components/ui/Button";
+import { Input, Label } from "@/components/ui";
+
+// TODO - form state / validation with react-hook-form
 
 type Props = {
   setStep: React.Dispatch<
@@ -15,71 +20,80 @@ const RegistrationForm: FC<Props> = ({ setStep }) => {
   const [passwordConfirm, setPasswordConfirm] = useState("");
 
   return (
-    <form
-      onSubmit={async (e) => {
-        e.preventDefault();
+    <div className="flex items-center justify-center flex-1">
+      <form
+        className="w-80 flex flex-col gap-3"
+        onSubmit={async (e) => {
+          e.preventDefault();
 
-        if (
-          !email.length ||
-          !password.length ||
-          !passwordConfirm.length ||
-          password !== passwordConfirm
-        ) {
-          alert("Invalid form");
-          return;
-        }
-
-        try {
-          const { nextStep } = await signUp({
-            password,
-            username: email,
-            options: {
-              userAttributes: { email },
-              autoSignIn: true,
-            },
-          });
-
-          if (nextStep.signUpStep === "CONFIRM_SIGN_UP") {
-            setStep("emailValidation");
+          if (
+            !email.length ||
+            !password.length ||
+            !passwordConfirm.length ||
+            password !== passwordConfirm
+          ) {
+            alert("Invalid form");
+            return;
           }
-        } catch (e) {
-          console.error(e);
-        }
-      }}
-    >
-      <div>
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </div>
 
-      <div>
-        <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="password-confirm">Password Confirmation</label>
-        <input
-          id="password-confirm"
-          type="password"
-          value={passwordConfirm}
-          onChange={(e) => setPasswordConfirm(e.target.value)}
-        />
-      </div>
+          try {
+            const { nextStep } = await signUp({
+              password,
+              username: email,
+              options: {
+                userAttributes: { email },
+                autoSignIn: true,
+              },
+            });
 
-      <button type="submit">Sign Up</button>
+            if (nextStep.signUpStep === "CONFIRM_SIGN_UP") {
+              setStep("emailValidation");
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }}
+      >
+        <InputGroup>
+          <Label htmlFor="email">Email*</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </InputGroup>
 
-      <Link href={"user"}>Sign In</Link>
-    </form>
+        <InputGroup>
+          <Label htmlFor="password">Password*</Label>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </InputGroup>
+        <InputGroup>
+          <Label htmlFor="password-confirm">Re-type Password*</Label>
+          <Input
+            id="password-confirm"
+            type="password"
+            value={passwordConfirm}
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+          />
+        </InputGroup>
+
+        <div className="flex gap-2 justify-center flex-row-reverse">
+          <Button type="submit" className="flex-1">
+            Register
+          </Button>
+
+          <Button type="button" variant={"outline"} className="flex-1">
+            Login
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 };
 
@@ -88,50 +102,56 @@ const ValidateEmailForm: FC<Props> = ({ setStep }) => {
   const [confirmationCode, setConfirmationCode] = useState("");
 
   return (
-    <form
-      onSubmit={async (e) => {
-        e.preventDefault();
+    <div className="flex items-center justify-center flex-1">
+      <form
+        className="w-80 flex flex-col gap-3"
+        onSubmit={async (e) => {
+          e.preventDefault();
 
-        if (!confirmationCode.length || !email.length) {
-          alert("Invalid form");
-          return;
-        }
-
-        try {
-          const { nextStep } = await confirmSignUp({
-            confirmationCode,
-            username: email,
-          });
-
-          if (nextStep.signUpStep === "COMPLETE_AUTO_SIGN_IN") {
-            setStep("autoSignIn");
+          if (!confirmationCode.length || !email.length) {
+            alert("Invalid form");
+            return;
           }
-        } catch (e) {
-          console.error(e);
-        }
-      }}
-    >
-      <div>
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </div>
 
-      <div>
-        <label htmlFor="confirmation-code">Confirmation Code</label>
-        <input
-          id="confirmation-code"
-          type="text"
-          value={confirmationCode}
-          onChange={(e) => setConfirmationCode(e.target.value)}
-        />
-      </div>
-      <button type="submit">Confirm</button>
-    </form>
+          try {
+            const { nextStep } = await confirmSignUp({
+              confirmationCode,
+              username: email,
+            });
+
+            if (nextStep.signUpStep === "COMPLETE_AUTO_SIGN_IN") {
+              setStep("autoSignIn");
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }}
+      >
+        <InputGroup>
+          <Label htmlFor="email">Email*</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </InputGroup>
+
+        <InputGroup>
+          <Label htmlFor="confirmation-code">Confirmation Code*</Label>
+          <Input
+            id="confirmation-code"
+            type="text"
+            value={confirmationCode}
+            onChange={(e) => setConfirmationCode(e.target.value)}
+          />
+        </InputGroup>
+
+        <Button type="submit" className="w-full">
+          Confirm
+        </Button>
+      </form>
+    </div>
   );
 };
 
