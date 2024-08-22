@@ -135,6 +135,14 @@ export const Register: FC<FormProps> = ({
 
             {errors?.["form"] && <FormErrors errors={errors["form"]} />}
           </form>
+
+          <Button
+            variant={"link"}
+            className="mt-4 p-0 w-full text-sm"
+            onClick={() => dispatch({ type: "registrationCompleted" })}
+          >
+            Need to enter a confirmation code?
+          </Button>
         </CardContent>
       </Card>
     </div>

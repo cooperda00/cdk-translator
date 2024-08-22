@@ -22,7 +22,7 @@ export const AppNavigation = () => {
         </Link>
 
         {!isLoggedIn && (
-          <>
+          <div>
             <Button
               variant={"link"}
               onClick={() => {
@@ -40,7 +40,7 @@ export const AppNavigation = () => {
             >
               Register
             </Button>
-          </>
+          </div>
         )}
 
         {isLoggedIn && (

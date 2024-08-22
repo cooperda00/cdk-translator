@@ -1,8 +1,15 @@
 import { FC, useState } from "react";
 import { confirmationFormStateSchema, FormProps } from "./types";
-import { CardContent, InputGroup, Input, FormErrors } from "@/components/ui";
+import {
+  CardContent,
+  InputGroup,
+  Input,
+  FormErrors,
+  Card,
+  Label,
+  Button,
+} from "@/components/ui";
 import { FormattedZodErrors, formatZodErrors } from "@/lib";
-import { Card, Label, Button } from "@aws-amplify/ui-react";
 import { confirmSignUp } from "aws-amplify/auth";
 
 export const ConfirmEmail: FC<FormProps> = ({
