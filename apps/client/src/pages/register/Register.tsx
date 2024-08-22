@@ -17,11 +17,15 @@ export const Register: FC<FormProps> = ({
   formState: { email, password, passwordConfirm },
   dispatch,
 }) => {
-  const [errors, setErrors] = useState<FormattedZodErrors>({});
   const router = useRouter();
+
+  const [errors, setErrors] = useState<FormattedZodErrors>({});
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    setLoading(true);
 
     setErrors({});
 
@@ -33,6 +37,7 @@ export const Register: FC<FormProps> = ({
 
     if (error) {
       setErrors(formatZodErrors(error));
+      setLoading(false);
       return;
     }
 
@@ -53,6 +58,8 @@ export const Register: FC<FormProps> = ({
       if (e instanceof Error) {
         setErrors({ form: [e.message] });
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -110,7 +117,7 @@ export const Register: FC<FormProps> = ({
             </InputGroup>
 
             <div className="flex gap-2 justify-center flex-row-reverse">
-              <Button type="submit" className="flex-1">
+              <Button type="submit" className="flex-1" disabled={loading}>
                 Register
               </Button>
 

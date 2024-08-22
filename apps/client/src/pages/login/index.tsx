@@ -20,9 +20,12 @@ const Login: NextPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<FormattedZodErrors>({});
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    setLoading(true);
 
     setErrors({});
 
@@ -30,6 +33,7 @@ const Login: NextPage = () => {
 
     if (error) {
       setErrors(formatZodErrors(error));
+      setLoading(false);
       return;
     }
 
@@ -47,6 +51,8 @@ const Login: NextPage = () => {
       if (e instanceof Error) {
         setErrors({ form: [e.message] });
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -83,7 +89,7 @@ const Login: NextPage = () => {
             </InputGroup>
 
             <div className="flex gap-2 justify-center flex-row-reverse">
-              <Button type="submit" className="flex-1">
+              <Button type="submit" className="flex-1" disabled={loading}>
                 Login
               </Button>
 

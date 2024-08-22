@@ -10,9 +10,12 @@ export const ConfirmEmail: FC<FormProps> = ({
   formState: { email, confirmationCode },
 }) => {
   const [errors, setErrors] = useState<FormattedZodErrors>({});
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    setLoading(true);
 
     setErrors({});
 
@@ -23,6 +26,7 @@ export const ConfirmEmail: FC<FormProps> = ({
 
     if (error) {
       setErrors(formatZodErrors(error));
+      setLoading(false);
       return;
     }
 
@@ -39,6 +43,8 @@ export const ConfirmEmail: FC<FormProps> = ({
       if (e instanceof Error) {
         setErrors({ form: [e.message] });
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -80,7 +86,7 @@ export const ConfirmEmail: FC<FormProps> = ({
               )}
             </InputGroup>
 
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={loading}>
               Confirm
             </Button>
 
