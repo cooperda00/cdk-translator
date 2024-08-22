@@ -1,12 +1,13 @@
-import Link from "next/link";
 import React, { FC, useEffect, useState } from "react";
 import { signUp, confirmSignUp, autoSignIn } from "aws-amplify/auth";
 import { useRouter } from "next/router";
 import { InputGroup } from "@/components/ui/InputGroup";
 import { Button } from "@/components/ui/Button";
 import { Input, Label } from "@/components/ui";
+import { Card, CardContent } from "@/components/ui/Card";
 
 // TODO - form state / validation with react-hook-form
+// TODO - manage state with a reducer, share across components to persist email address etc
 
 type Props = {
   setStep: React.Dispatch<
@@ -19,80 +20,93 @@ const RegistrationForm: FC<Props> = ({ setStep }) => {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
 
+  const router = useRouter();
+
   return (
     <div className="flex items-center justify-center flex-1">
-      <form
-        className="w-80 flex flex-col gap-3"
-        onSubmit={async (e) => {
-          e.preventDefault();
+      <Card>
+        <CardContent className="pt-6">
+          <form
+            className="w-80 flex flex-col gap-3"
+            onSubmit={async (e) => {
+              e.preventDefault();
 
-          if (
-            !email.length ||
-            !password.length ||
-            !passwordConfirm.length ||
-            password !== passwordConfirm
-          ) {
-            alert("Invalid form");
-            return;
-          }
+              if (
+                !email.length ||
+                !password.length ||
+                !passwordConfirm.length ||
+                password !== passwordConfirm
+              ) {
+                alert("Invalid form");
+                return;
+              }
 
-          try {
-            const { nextStep } = await signUp({
-              password,
-              username: email,
-              options: {
-                userAttributes: { email },
-                autoSignIn: true,
-              },
-            });
+              try {
+                const { nextStep } = await signUp({
+                  password,
+                  username: email,
+                  options: {
+                    userAttributes: { email },
+                    autoSignIn: true,
+                  },
+                });
 
-            if (nextStep.signUpStep === "CONFIRM_SIGN_UP") {
-              setStep("emailValidation");
-            }
-          } catch (e) {
-            console.error(e);
-          }
-        }}
-      >
-        <InputGroup>
-          <Label htmlFor="email">Email*</Label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </InputGroup>
+                if (nextStep.signUpStep === "CONFIRM_SIGN_UP") {
+                  setStep("emailValidation");
+                }
+              } catch (e) {
+                console.error(e);
+              }
+            }}
+          >
+            <InputGroup>
+              <Label htmlFor="email">Email*</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </InputGroup>
 
-        <InputGroup>
-          <Label htmlFor="password">Password*</Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </InputGroup>
-        <InputGroup>
-          <Label htmlFor="password-confirm">Re-type Password*</Label>
-          <Input
-            id="password-confirm"
-            type="password"
-            value={passwordConfirm}
-            onChange={(e) => setPasswordConfirm(e.target.value)}
-          />
-        </InputGroup>
+            <InputGroup>
+              <Label htmlFor="password">Password*</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </InputGroup>
+            <InputGroup>
+              <Label htmlFor="password-confirm">Re-type Password*</Label>
+              <Input
+                id="password-confirm"
+                type="password"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+              />
+            </InputGroup>
 
-        <div className="flex gap-2 justify-center flex-row-reverse">
-          <Button type="submit" className="flex-1">
-            Register
-          </Button>
+            <div className="flex gap-2 justify-center flex-row-reverse">
+              <Button type="submit" className="flex-1">
+                Register
+              </Button>
 
-          <Button type="button" variant={"outline"} className="flex-1">
-            Login
-          </Button>
-        </div>
-      </form>
+              <Button
+                type="button"
+                variant={"outline"}
+                className="flex-1"
+                onClick={() => {
+                  router.push("/login");
+                }}
+              >
+                Login
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };
@@ -103,54 +117,58 @@ const ValidateEmailForm: FC<Props> = ({ setStep }) => {
 
   return (
     <div className="flex items-center justify-center flex-1">
-      <form
-        className="w-80 flex flex-col gap-3"
-        onSubmit={async (e) => {
-          e.preventDefault();
+      <Card>
+        <CardContent className="pt-6">
+          <form
+            className="w-80 flex flex-col gap-3"
+            onSubmit={async (e) => {
+              e.preventDefault();
 
-          if (!confirmationCode.length || !email.length) {
-            alert("Invalid form");
-            return;
-          }
+              if (!confirmationCode.length || !email.length) {
+                alert("Invalid form");
+                return;
+              }
 
-          try {
-            const { nextStep } = await confirmSignUp({
-              confirmationCode,
-              username: email,
-            });
+              try {
+                const { nextStep } = await confirmSignUp({
+                  confirmationCode,
+                  username: email,
+                });
 
-            if (nextStep.signUpStep === "COMPLETE_AUTO_SIGN_IN") {
-              setStep("autoSignIn");
-            }
-          } catch (e) {
-            console.error(e);
-          }
-        }}
-      >
-        <InputGroup>
-          <Label htmlFor="email">Email*</Label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </InputGroup>
+                if (nextStep.signUpStep === "COMPLETE_AUTO_SIGN_IN") {
+                  setStep("autoSignIn");
+                }
+              } catch (e) {
+                console.error(e);
+              }
+            }}
+          >
+            <InputGroup>
+              <Label htmlFor="email">Email*</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </InputGroup>
 
-        <InputGroup>
-          <Label htmlFor="confirmation-code">Confirmation Code*</Label>
-          <Input
-            id="confirmation-code"
-            type="text"
-            value={confirmationCode}
-            onChange={(e) => setConfirmationCode(e.target.value)}
-          />
-        </InputGroup>
+            <InputGroup>
+              <Label htmlFor="confirmation-code">Confirmation Code*</Label>
+              <Input
+                id="confirmation-code"
+                type="text"
+                value={confirmationCode}
+                onChange={(e) => setConfirmationCode(e.target.value)}
+              />
+            </InputGroup>
 
-        <Button type="submit" className="w-full">
-          Confirm
-        </Button>
-      </form>
+            <Button type="submit" className="w-full">
+              Confirm
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

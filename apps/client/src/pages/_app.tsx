@@ -7,8 +7,8 @@ import { Authenticator } from "@aws-amplify/ui-react";
 Amplify.configure({
   Auth: {
     Cognito: {
-      userPoolClientId: "1qhs0bsnkjomrua1pj3h9mdhm1",
-      userPoolId: "us-east-1_Uhv1GdssE",
+      userPoolClientId: process.env.USER_POOL_CLIENT_ID!,
+      userPoolId: process.env.USER_POOL_ID!,
     },
   },
 });

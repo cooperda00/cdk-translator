@@ -20,3 +20,7 @@ export type TranslationDBDocument = TranslateRequest &
     username: string;
     requestId: string;
   };
+
+export type GetTranslationsResponse = {
+  translations: TranslationDBDocument[];
+};
