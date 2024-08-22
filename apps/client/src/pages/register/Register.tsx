@@ -1,32 +1,35 @@
-import { FormErrors, Input } from "@/components/ui";
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent } from "@/components/ui/Card";
-import { InputGroup } from "@/components/ui/InputGroup";
-import { Label } from "@/components/ui/Label";
+import { FC, useState } from "react";
+import { FormProps, registerFormStateSchema } from "./types";
+import {
+  CardContent,
+  InputGroup,
+  FormErrors,
+  Card,
+  Label,
+  Button,
+  Input,
+} from "@/components/ui";
 import { FormattedZodErrors, formatZodErrors } from "@/lib";
-import { signIn } from "aws-amplify/auth";
-import { NextPage } from "next";
+import { signUp } from "aws-amplify/auth";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
-import z from "zod";
 
-const formStateSchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
-});
-
-const Login: NextPage = () => {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export const Register: FC<FormProps> = ({
+  formState: { email, password, passwordConfirm },
+  dispatch,
+}) => {
   const [errors, setErrors] = useState<FormattedZodErrors>({});
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setErrors({});
 
-    const { error } = formStateSchema.safeParse({ email, password });
+    const { error } = registerFormStateSchema.safeParse({
+      email,
+      password,
+      passwordConfirm,
+    });
 
     if (error) {
       setErrors(formatZodErrors(error));
@@ -34,15 +37,18 @@ const Login: NextPage = () => {
     }
 
     try {
-      await signIn({
-        username: email,
+      const { nextStep } = await signUp({
         password,
+        username: email,
         options: {
-          clientMetadata: { email },
+          userAttributes: { email },
+          autoSignIn: true,
         },
       });
 
-      router.push("/");
+      if (nextStep.signUpStep === "CONFIRM_SIGN_UP") {
+        dispatch({ type: "registrationCompleted" });
+      }
     } catch (e) {
       if (e instanceof Error) {
         setErrors({ form: [e.message] });
@@ -61,10 +67,11 @@ const Login: NextPage = () => {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) =>
+                  dispatch({ type: "emailChanged", payload: e.target.value })
+                }
                 hasError={!!errors?.["email"]}
               />
-
               {errors?.["email"] && <FormErrors errors={errors["email"]} />}
             </InputGroup>
 
@@ -74,28 +81,48 @@ const Login: NextPage = () => {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) =>
+                  dispatch({ type: "passwordChanged", payload: e.target.value })
+                }
                 hasError={!!errors?.["password"]}
               />
               {errors?.["password"] && (
                 <FormErrors errors={errors["password"]} />
               )}
             </InputGroup>
+            <InputGroup>
+              <Label htmlFor="password-confirm">Re-type Password*</Label>
+              <Input
+                id="password-confirm"
+                type="password"
+                value={passwordConfirm}
+                onChange={(e) =>
+                  dispatch({
+                    type: "paswordConfirmChanged",
+                    payload: e.target.value,
+                  })
+                }
+                hasError={!!errors?.["passwordConfirm"]}
+              />
+              {errors?.["passwordConfirm"] && (
+                <FormErrors errors={errors["passwordConfirm"]} />
+              )}
+            </InputGroup>
 
             <div className="flex gap-2 justify-center flex-row-reverse">
               <Button type="submit" className="flex-1">
-                Login
+                Register
               </Button>
 
               <Button
                 type="button"
                 variant={"link"}
-                onClick={() => {
-                  router.push("register");
-                }}
                 className="flex-1"
+                onClick={() => {
+                  router.push("/login");
+                }}
               >
-                Register
+                Login
               </Button>
             </div>
 
@@ -106,5 +133,3 @@ const Login: NextPage = () => {
     </div>
   );
 };
-
-export default Login;
