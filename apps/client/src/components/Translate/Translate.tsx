@@ -5,8 +5,6 @@ import { LanguageSelector } from "../LanguageSelector";
 import { LanguageCode } from "iso-639-1";
 import { createTranslation } from "@/lib/api";
 
-// TODO : react hook forms
-
 export const Translate = () => {
   const [sourceLang, setSourceLang] = useState<LanguageCode>();
   const [targetLang, setTargetLang] = useState<LanguageCode>();

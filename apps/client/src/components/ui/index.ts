@@ -5,3 +5,4 @@ export * from "./Label";
 export * from "./Card";
 export * from "./Select";
 export * from "./Textarea";
+export * from "./FormErrors";
