@@ -6,8 +6,8 @@ import { LanguageCode } from "iso-639-1";
 import { createTranslation } from "@/lib/api";
 
 export const Translate = () => {
-  const [sourceLang, setSourceLang] = useState<LanguageCode>();
-  const [targetLang, setTargetLang] = useState<LanguageCode>();
+  const [sourceLang, setSourceLang] = useState<LanguageCode | undefined>("en");
+  const [targetLang, setTargetLang] = useState<LanguageCode | undefined>();
   const [sourceText, setSourceText] = useState("");
   const [resultText, setResultText] = useState("");
 
