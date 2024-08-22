@@ -6,9 +6,6 @@ import { Button } from "@/components/ui/Button";
 import { Input, Label } from "@/components/ui";
 import { Card, CardContent } from "@/components/ui/Card";
 
-// TODO - form state / validation with react-hook-form
-// TODO - manage state with a reducer, share across components to persist email address etc
-
 type Props = {
   setStep: React.Dispatch<
     React.SetStateAction<"init" | "emailValidation" | "autoSignIn">

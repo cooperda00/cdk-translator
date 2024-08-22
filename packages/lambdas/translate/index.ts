@@ -1,5 +1,10 @@
 import { APIGatewayProxyEvent, APIGatewayProxyHandler } from "aws-lambda";
-import { translateRequestSchema } from "@cdk-test/types";
+import {
+  DeleteTranslationResponse,
+  GetTranslationsResponse,
+  translateRequestSchema,
+  TranslateResponse,
+} from "@cdk-test/types";
 import * as dynamoDb from "@aws-sdk/client-dynamodb";
 import {
   gatewayResponse,
@@ -80,13 +85,12 @@ export const createTranslation: APIGatewayProxyHandler = async (e, context) => {
       username: usernameResult.username!,
     });
 
-    return gatewayResponse(
-      200,
-      JSON.stringify({
-        timestamp,
-        translation,
-      })
-    );
+    const response = {
+      timestamp,
+      translation,
+    } satisfies TranslateResponse;
+
+    return gatewayResponse(200, JSON.stringify(response));
   } catch (e) {
     console.error(e);
     return gatewayResponse(500, "Could not process request");
@@ -109,12 +113,9 @@ export const getTranslations: APIGatewayProxyHandler = async (e) => {
       username: usernameResult.username!,
     });
 
-    return gatewayResponse(
-      200,
-      JSON.stringify({
-        translations,
-      })
-    );
+    const response = { translations } satisfies GetTranslationsResponse;
+
+    return gatewayResponse(200, JSON.stringify(response));
   } catch (e) {
     console.error(e);
     return gatewayResponse(500, "Could not process request");
@@ -143,8 +144,10 @@ export const deleteTranslation: APIGatewayProxyHandler = async (e) => {
     requestId,
   });
 
+  const response = { deletedRequestId } satisfies DeleteTranslationResponse;
+
   try {
-    return gatewayResponse(200, JSON.stringify({ deletedRequestId }));
+    return gatewayResponse(200, JSON.stringify(response));
   } catch (e) {
     console.error(e);
     return gatewayResponse(500, "Could not process request");

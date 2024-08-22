@@ -2,9 +2,7 @@
 
 ## TODOs 
 - TODO :
-- react-query / api class
-- protected routes / redirects
-- styles (mimic google translate layout)
+- react-query
 - modalled window of previous translations
 - Rate limiting / max requests
 

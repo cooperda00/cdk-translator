@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const translateRequestSchema = z.object({
-  targetLang: z.string(), // TODO : get list of lang iso strings, refer as enum
+  targetLang: z.string(),
   sourceLang: z.string(),
   text: z.string().min(1),
 });
@@ -23,4 +23,8 @@ export type TranslationDBDocument = TranslateRequest &
 
 export type GetTranslationsResponse = {
   translations: TranslationDBDocument[];
+};
+
+export type DeleteTranslationResponse = {
+  deletedRequestId: string;
 };
