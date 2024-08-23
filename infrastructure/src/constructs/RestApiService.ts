@@ -25,6 +25,7 @@ export interface IRestApiServiceProps extends StackProps {
 export class RestApiService extends Construct {
   public restApi: RestApi;
   public authorizer?: CognitoUserPoolsAuthorizer;
+  public translationsResource: Resource;
   public translationResource: Resource;
 
   constructor(
@@ -47,8 +48,9 @@ export class RestApiService extends Construct {
       },
     });
 
-    this.translationResource = this.restApi.root.addResource("translations");
-    this.translationResource.addResource("{requestId}"); // Path Params
+    this.translationsResource = this.restApi.root.addResource("translations");
+    this.translationResource =
+      this.translationsResource.addResource("{requestId}"); // Path Params
 
     if (userPool) {
       this.authorizer = new CognitoUserPoolsAuthorizer(this, "authorizer", {

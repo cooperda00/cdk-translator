@@ -4,6 +4,8 @@ import { FormEvent, useState } from "react";
 import { LanguageSelector } from "../LanguageSelector";
 import { LanguageCode } from "iso-639-1";
 import { createTranslation } from "@/lib/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { translateRequestSchema } from "@cdk-test/types";
 
 export const Translate = () => {
   const [sourceLang, setSourceLang] = useState<LanguageCode | undefined>("en");
@@ -22,22 +24,33 @@ export const Translate = () => {
     setResultText(prevSourceText);
   };
 
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationKey: ["createTranslation"],
+    mutationFn: createTranslation,
+    onSuccess({ data }) {
+      setResultText(data.translation);
+      queryClient.invalidateQueries({ queryKey: ["translations"] });
+      // queryClient.setQueryData(['todo', { id: variables.id }], data) // To do this we need to make sure that the API always responds with the full item
+    },
+  });
+
   const handleTranslation = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!sourceLang || !targetLang) {
-      return;
-    }
-
-    const result = await createTranslation({
-      sourceLang: sourceLang,
-      targetLang: targetLang,
+    const { error, data } = translateRequestSchema.safeParse({
+      sourceLang,
+      targetLang,
       text: sourceText,
     });
 
-    if (result.data.translation) {
-      setResultText(result.data.translation);
+    if (!data && error) {
+      // Show some kind of error
+      return;
     }
+
+    mutate(data);
   };
 
   return (

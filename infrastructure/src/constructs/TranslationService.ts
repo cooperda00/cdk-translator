@@ -78,7 +78,7 @@ export class TranslationService extends Construct {
     });
 
     restApi.mapLambdaToMethod({
-      resource: restApi.translationResource, // at path /translation
+      resource: restApi.translationsResource, // at path /translation
       method: "POST",
       lambda: createTranslationFunc,
       isAuthed: true,
@@ -91,7 +91,7 @@ export class TranslationService extends Construct {
     });
 
     restApi.mapLambdaToMethod({
-      resource: restApi.translationResource,
+      resource: restApi.translationsResource,
       method: "GET",
       lambda: getTranslationsFunc,
       isAuthed: true,

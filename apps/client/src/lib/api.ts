@@ -4,6 +4,7 @@ import {
   TranslateRequest,
   TranslateResponse,
   GetTranslationsResponse,
+  DeleteTranslationResponse,
 } from "@cdk-test/types";
 
 const apiURL = "https://api.test.danielcooper.io/translations";
@@ -35,9 +36,11 @@ export const createTranslation = async (
   return axios.post<TranslateResponse>(apiURL, input, await buildHeaders());
 };
 
-//   delete<T>(
-//     url: string,
-//     config?: AxiosRequestConfig
-//   ): Promise<AxiosResponse<T>> {
-//     return this.instance.delete<T>(url, config);
-//   }
+export const deleteTranslation = async (
+  requestId: string
+): Promise<AxiosResponse<DeleteTranslationResponse>> => {
+  return await axios.delete<DeleteTranslationResponse>(
+    `${apiURL}/${requestId}`,
+    await buildHeaders()
+  );
+};
