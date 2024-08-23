@@ -7,7 +7,7 @@ import {
   DeleteTranslationResponse,
 } from "@cdk-translator/types";
 
-const apiURL = "https://api.test.danielcooper.io/translations";
+const apiURL = "https://api.translate.danielcooper.io/translations";
 
 const buildHeaders = async () => {
   try {

@@ -46,5 +46,5 @@ export const registerFormStateSchema = z
 
 export const confirmationFormStateSchema = z.object({
   email: z.string().email(),
-  code: z.string().length(6),
+  confirmationCode: z.string().length(6),
 });
