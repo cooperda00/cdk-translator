@@ -1,5 +1,5 @@
 import * as clientTranslate from "@aws-sdk/client-translate";
-import { TranslateRequest } from "@cdk-test/types";
+import { TranslateRequest } from "@cdk-translator/types";
 
 export const translateText = async ({
   sourceLang,

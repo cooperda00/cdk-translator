@@ -4,7 +4,7 @@ import {
   DeleteItemCommand,
   QueryCommand,
 } from "@aws-sdk/client-dynamodb";
-import { TranslationDBDocument } from "@cdk-test/types";
+import { TranslationDBDocument } from "@cdk-translator/types";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
 export class TranslationTable {

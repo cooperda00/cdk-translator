@@ -5,7 +5,7 @@ import { LanguageSelector } from "../LanguageSelector";
 import { LanguageCode } from "iso-639-1";
 import { createTranslation } from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { translateRequestSchema } from "@cdk-test/types";
+import { translateRequestSchema } from "@cdk-translator/types";
 
 export const Translate = () => {
   const [sourceLang, setSourceLang] = useState<LanguageCode | undefined>("en");

@@ -4,7 +4,7 @@ import {
   GetTranslationsResponse,
   translateRequestSchema,
   TranslateResponse,
-} from "@cdk-test/types";
+} from "@cdk-translator/types";
 import * as dynamoDb from "@aws-sdk/client-dynamodb";
 import {
   gatewayResponse,

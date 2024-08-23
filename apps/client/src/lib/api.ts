@@ -5,7 +5,7 @@ import {
   TranslateResponse,
   GetTranslationsResponse,
   DeleteTranslationResponse,
-} from "@cdk-test/types";
+} from "@cdk-translator/types";
 
 const apiURL = "https://api.test.danielcooper.io/translations";
 

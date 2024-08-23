@@ -9,7 +9,6 @@ import { CloudFrontTarget } from "aws-cdk-lib/aws-route53-targets";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
 import { Construct } from "constructs";
-import * as path from "path";
 import { clientDistPath } from "../helpers";
 
 export interface IStaticWebsiteDeploymentProps extends StackProps {
