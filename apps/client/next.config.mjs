@@ -4,8 +4,8 @@ const nextConfig = {
   output: "export",
   distDir: "dist",
   env: {
-    USER_POOL_CLIENT_ID: "3qp8lcq3jpqi949l74k6phsqhs",
-    USER_POOL_ID: "us-east-1_fhwQY4Tg6",
+    USER_POOL_CLIENT_ID: "4t3kunvfu9cs3q16sjlmiq3ceh",
+    USER_POOL_ID: "us-east-1_8QTPSGP3Q",
   },
   transpilePackages: ["@cdk-translator/types"],
 };
